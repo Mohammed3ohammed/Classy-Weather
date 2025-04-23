@@ -1,4 +1,4 @@
-function getWatherIcon(wmoCode) {
+function getWeatherIcon(wmoCode) {
     const icons = new Map([
         [[0], ""],
         [[1], ""],
@@ -14,4 +14,12 @@ function getWatherIcon(wmoCode) {
     const arr = [...icons.keys()].find((key) => key.includes(wmoCode));
     if (!arr) return "Not Found";
     return icons.get(arr);
+}
+
+function convertToFlag(countryCode) {
+    const codePoints = countryCode
+    .toUpperCase()
+    .split("")
+    .map((char) => 127397 + char.carCodeAt());
+    return String.fromCodePoint(...codePoints);
 }
