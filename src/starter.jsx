@@ -23,3 +23,9 @@ function convertToFlag(countryCode) {
     .map((char) => 127397 + char.carCodeAt());
     return String.fromCodePoint(...codePoints);
 }
+
+function fromatDay(dateStr) {
+    return new Intl.DateTimeFormat("en", {
+        weekday: "short",
+    }).format(new Date(dateStr));
+}
