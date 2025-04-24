@@ -22,7 +22,7 @@ function convertToFlag(countryCode) {
   const codePoints = countryCode
   .toUpperCase()
   .split("")
-  .map((char) => 127397 + char.carCodeAt());
+  .map((char) => 127397 + char.charCodeAt());
   return String.fromCodePoint(...codePoints);
 }
 
@@ -54,7 +54,7 @@ class App extends React.Component {
       const { latitude, longitude, timezone, name, country_code } = 
       geoData.results.at(0);
 
-      this.setState({displayLocathion: `${name} ${convertToFlag(country_code)}`})
+      this.setState({displayLocathion: `${name} ${convertToFlag(country_code)}`,});
 
       const weatherRes = await fetch (
            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=${timezone}&daily=weathercode,temperature_2m_max,temperature_2m_min`
@@ -112,12 +112,13 @@ class Weather extends React.Component {
         <h2>Weather {this.props.location}</h2>
         <ul className="weather">
           {
-          dates.map(date=> <Day
+          dates.map((date, i) => <Day
           date={date}
           max={max.at(i)}
           min={min.at(i)}
           code={codes.at(i)}
           key={date}
+          isToday={i === 0}
           />
           )}
         </ul>
@@ -125,4 +126,20 @@ class Weather extends React.Component {
     ) 
 
   }
+}
+
+class Day extends React.Component {
+  render() {
+    const  {date, max, min, code, isToday} = this.props;
+    return (
+      <li className="day">
+        <span>{getWeatherIcon(code)}</span>
+        <p>{isToday ? "Today" : formatDay(date)}</p>
+        <p>{Math.floor(min)}&deg; &mdash; <strong>{Math.ceil(max)}&deg;</strong></p>
+      </li>
+    
+    )
+  }
+
+
 }
