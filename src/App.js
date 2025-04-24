@@ -35,13 +35,18 @@ function formatDay(dateStr) {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {location: "lisbon", isLoading: false,displayLocathion: "",
-      weather: {}
+    this.state = {
+      location: "lisbon", isLoading: false, 
+      displayLocathion: "",
+      weather: {},
      }
     this.fetchWeather = this.fetchWeather.bind(this);
   }
 
   async fetchWeather() {
+
+    if (this.state.location.length < 2) return this.setState({weather: {}})
+
     try {
       const geoRes = await fetch(
                 `https://geocoding-api.open-meteo.com/v1/search?name=${this.state.location}`
@@ -70,16 +75,31 @@ class App extends React.Component {
   }
   }
 
+  setLocation = (e) => this.setState({ location: e.target.value});
+
+  componentDidMount() {
+    this.fetchWeather();
+
+    this.setState({location: localStorage.getItem('location') || ""});
+  }
+
+  componentDidUpdate( prevProps, prevState ) {
+    if (this.state.locathon !== prevState.locathon) {
+      this.fetchWeather();
+
+      localStorage.setItem('location', this.state.location) 
+    }
+  }
+
+
   render() {
     return (
       <div className="app">
         <h1>classy Weather</h1>
-        <div>
-        <input type="text" placeholder="Search from lacation..."
-        value={this.state.location}
-        onChange={(e) => this.setState({ location: e.target.value})}
+        <Input 
+        location={this.state.location} 
+        onChangeLocation={this.setLocation}
         />
-        </div>
         <button onClick={this.fetchWeather}>Get weather</button>
         {
           this.state.isLoading && <p className="loader">Loading...</p>
@@ -98,7 +118,25 @@ class App extends React.Component {
 
 export default App;
 
+class Input extends React.Component {
+  render() {
+    return (
+      <div>
+      <input type="text" placeholder="Search from lacation..."
+      value={this.props.location}
+      onChange={this.props.onChangeLocation}
+      />
+      </div>
+    )
+  }
+}
+
 class Weather extends React.Component {
+
+  componentWillUnmount() {
+    console.log("weather will");
+  }
+
   render() {
     const {
       temperature_2m_max: max,
