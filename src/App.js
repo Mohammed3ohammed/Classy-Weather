@@ -11,7 +11,7 @@ function getWeatherIcon(wmoCode) {
       [[53, 55, 63, 65, 57, 67, 81, 82], "🌧"],
       [[71, 73, 75, 77, 85, 86], "🌨"],
       [[95], "🌩"],
-      [[596, 99], "⛈"],
+      [[96, 99], "⛈"],
   ]);
   const arr = [...icons.keys()].find((key) => key.includes(wmoCode));
     if (!arr) return "Not Found";
@@ -37,7 +37,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       location: "lisbon", isLoading: false, 
-      displayLocathion: "",
+      displayLocation: "",
       weather: {},
      }
     this.fetchWeather = this.fetchWeather.bind(this);
@@ -59,7 +59,7 @@ class App extends React.Component {
       const { latitude, longitude, timezone, name, country_code } = 
       geoData.results.at(0);
 
-      this.setState({displayLocathion: `${name} ${convertToFlag(country_code)}`,});
+      this.setState({displayLocation: `${name} ${convertToFlag(country_code)}`,});
 
       const weatherRes = await fetch (
            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=${timezone}&daily=weathercode,temperature_2m_max,temperature_2m_min`
@@ -84,7 +84,7 @@ class App extends React.Component {
   }
 
   componentDidUpdate( prevProps, prevState ) {
-    if (this.state.locathon !== prevState.locathon) {
+    if (this.state.location !== prevState.location) {
       this.fetchWeather();
 
       localStorage.setItem('location', this.state.location) 
@@ -108,7 +108,7 @@ class App extends React.Component {
         {this.state.weather.weathercode && (
           <Weather 
           weather={this.state.weather}
-          location={this.state.location}
+          location={this.state.displayLocation}
           />
         )}
       </div>
@@ -122,7 +122,7 @@ class Input extends React.Component {
   render() {
     return (
       <div>
-      <input type="text" placeholder="Search from lacation..."
+      <input type="text" placeholder="Search from location..."
       value={this.props.location}
       onChange={this.props.onChangeLocation}
       />
@@ -178,6 +178,5 @@ class Day extends React.Component {
     
     )
   }
-
 
 }
